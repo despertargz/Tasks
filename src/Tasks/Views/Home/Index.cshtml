@@ -19,24 +19,106 @@
 <body ng-app="TaskApp">
     <div ng-controller="HomeCtrl">
         <button class="btn btn-success" ng-click="newTask()">New</button>
-        <div ui-grid="{ data: tasks }" style="width: 100%; height:300px"></div>
+        <div ui-grid="gridOptions" ui-grid-selection style="width: 100%; height:300px"></div>
+        <div>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select class="form-control" ng-model="priorityList[selectedTask.Priority]">
+                        <option ng-repeat="priority in priorityList" 
+                                value="$index">{{priority}}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control" ng-model="statusList[selectedTask.Status]">
+                        <option ng-repeat="status in statusList" 
+                                value="$index">{{status}}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea></textarea>
+                </div>
+            </form>
+        </div>
     </div>
     <script>
-        var app = angular.module('TaskApp', ['ui.grid']);
-        app.controller('HomeCtrl', function ($scope, $http) {
+        var app = angular.module('TaskApp', ['ui.grid', 'ui.grid.selection']);
+        app.controller('HomeCtrl', function ($scope, $http, $timeout) {
+            $scope.gridOptions = {
+                enableRowSelection: true,
+                enableRowHeaderSelection: false
+            };
+
+            $scope.gridOptions.multiSelect = false;
+            $scope.gridOptions.modifierKeysToMultiSelect = false;
+            $scope.gridOptions.noUnselect = true;
+            $scope.gridOptions.onRegisterApi = function (gridApi) {
+                $scope.gridApi = gridApi;
+                gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+                    $scope.selectedTask = row.entity;
+                    console.log($scope.statusList[$scope.selectedTask.Status]);
+                    console.log($scope.priorityList[$scope.selectedTask.Priority]);
+                    console.log($scope.selectedTask);
+                    //$scope.$apply();
+                });
+            };
+
+
+            //$scope.toggleRowSelection = function () {
+            //    $scope.gridApi.selection.clearSelectedRows();
+            //    $scope.gridOptions.enableRowSelection = !$scope.gridOptions.enableRowSelection;
+            //    $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.OPTIONS);
+            //};
+
             $scope.newTask = function () {
                 $http.post('/tasks').then(function () {
                     $scope.loadTasks();
                 });
             };
             
+            $scope.statusList = [
+                '',
+                'Pending',
+                'Working',
+                'Completed'
+            ];
+
+            $scope.priorityList = [
+                '',
+                'Low',
+                'Normal',
+                'High'
+            ];
+            
             $scope.loadTasks = function () {
                 $http.get('/tasks').then(function (r) {
                     $scope.tasks = r.data;
+                    $scope.gridOptions.data = r.data;
+ 
+                    //$timeout(function () {
+                    //    if ($scope.gridApi.selection.selectRow) {
+                    //        $scope.gridApi.selection.selectRow($scope.gridOptions.data[0]);
+                    //    }
+                    //});
+
+   
                 });
             };
 
+
+            $scope.selectedTask = {};
+
             $scope.loadTasks();
+
+ 
         });
     </script>
 </body>
