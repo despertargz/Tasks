@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -6,9 +7,46 @@ using System.Threading.Tasks;
 
 namespace Tasks.Api
 {
-    public class TaskController
+    public static class DbFactory
     {
+        public static TaskDb Create()
+        {
+            return new TaskDb("data source=localhost\\sqlexpress; initial catalog=TaskDb; integrated security=true;");
+        }
+    }
 
+    public class TaskController : Controller
+    {
+        [HttpGet("/tasks")]
+        public object[] Get()
+        {
+            using (var db = DbFactory.Create())
+            {
+                return db.Tasks
+                    .Select(o => new { Name = o.Name, Priority = o.Priority, Status = o.Status, Created = o.Created, Due = o.Due })
+                    .ToArray();
+            }
+        }
+
+        [HttpPost("/tasks")]
+        public void Post()
+        {
+            using (var db = DbFactory.Create())
+            {
+                db.Tasks.Add(new Task()
+                {
+                    Priority = 3,
+                    Status = 1,
+                    Created = DateTime.Now,
+                    Completed = null,
+                    Updated = DateTime.Now,
+                    Due = null,
+                    Name = "New Task",
+                });
+
+                db.SaveChanges();
+            }
+        }
     }
 
     public class Task
@@ -19,8 +57,8 @@ namespace Tasks.Api
         public virtual List<Comment> Comments { get; set; }
         public virtual List<Tag> Tags { get; set; }
         public DateTime Created { get; set; }
-        public DateTime Completed { get; set; }
-        public DateTime Due { get; set; }
+        public DateTime? Completed { get; set; }
+        public DateTime? Due { get; set; }
         public DateTime Updated { get; set; }
         public int Priority { get; set; }
         public int Status { get; set; }
@@ -41,6 +79,11 @@ namespace Tasks.Api
 
     public class TaskDb : DbContext
     {
+        public TaskDb(string conStr) : base(conStr)
+        {
+
+        }
+
         public DbSet<Task> Tasks { get; set; }
     }
         
