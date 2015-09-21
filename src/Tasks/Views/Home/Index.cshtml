@@ -1,0 +1,35 @@
+﻿<head>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+
+    <script src="~/lib/angularjs/angular.min.js"></script>
+
+    <script src="~/lib/angular-ui-grid/ui-grid.min.js"></script>
+
+    <link rel="stylesheet" href="~/lib/angular-ui-grid/ui-grid.min.css" />
+</head>
+
+<body ng-app="TaskApp">
+    <div ng-controller="HomeCtrl">
+        <div ui-grid="{ data: myData }" style="width: 300px; height:300px"></div>
+    </div>
+    <script>
+        var app = angular.module('TaskApp', ['ui.grid']);
+        app.controller('HomeCtrl', function ($scope) {
+            $scope.myData = [
+
+            ];
+        });
+    </script>
+</body>
+
