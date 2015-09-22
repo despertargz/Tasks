@@ -21,6 +21,8 @@
 <body ng-app="TaskApp">
     <div ng-controller="HomeCtrl">
         <button class="btn btn-success" ng-click="newTask()">New</button>
+        <select class="form-control" ng-model="filterStatus" ng-change="loadTasks()" ng-options="id*1 as name for (id,name) in statusList"></select>
+
         <div ui-grid="gridOptions" ui-grid-selection style="width: 100%; height:300px"></div>
         <div>
             <form class="form-horizontal">
@@ -30,17 +32,21 @@
                 </div>
                 <div class="form-group">
                     <label>Priority</label>
-                    <select class="form-control" ng-model="selectedTask.Priority" ng-options="id*1 as name for (id,name) in priorityList" >
+                    <select class="form-control" ng-model="selectedTask.Priority" ng-change="updatePriority()" ng-options="id*1 as name for (id,name) in priorityList" >
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <select class="form-control" ng-model="selectedTask.Status" ng-options="id*1 as name for (id,name) in statusList">
+                    <select class="form-control" ng-model="selectedTask.Status" ng-change="updateStatus()" ng-options="id*1 as name for (id,name) in statusList">
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
                     <textarea ng-model="selectedTask.Description" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Due</label>
+                    <input type="datetime" class="form-control" ng-model="selectedTask.Due" />
                 </div>
             </form>
         </div>
@@ -58,18 +64,16 @@
                 enableRowSelection: true,
                 enableRowHeaderSelection: false,
                 columnDefs: [
+                    { name: 'Id', field: 'Id' },
                     { name: 'Name', field: 'Name' },
-                    { name: 'Status', cellTemplate: '<span>{{ grid.appScope.displayStatus(COL_FIELD) }}</span>' },
+                    { name: 'Status', cellTemplate: '<span>{{ grid.appScope.statusList[(COL_FIELD)] }}</span>' },
                     { name: 'Priority', cellTemplate: '<span>{{ grid.appScope.priorityList[(COL_FIELD)] }}</span>' },
                     { name: 'Created', cellTemplate: "<span>{{ grid.appScope.formatDate(COL_FIELD)}}</span>" },
                     { name: 'Due', cellTemplate: "<span>{{ grid.appScope.formatDate(COL_FIELD) }}</span>" }
                 ]
             };
 
-            $scope.displayStatus = function (status) {
-                console.log("STATUS: " + status);
-                return $scope.statusList[status];
-            };
+            $scope.filterStatus = null;
 
             $scope.formatDate = function (val) {
                 if (val == undefined) {
@@ -90,6 +94,7 @@
                 $scope.gridApi = gridApi;
                 gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                     $scope.selectedTask = row.entity;
+                    console.log(row.entity);
                 });
             };
 
@@ -110,9 +115,22 @@
                 2: 'Normal',
                 3: 'High'
             };
+
+            $scope.updateStatus = function () {
+                var data = { val: $scope.selectedTask.Status }
+                $http.post('/tasks/' + $scope.selectedTask.Id + "/status", data).then(function () {
+                    console.log('updated');
+                });
+
+            }
             
             $scope.loadTasks = function () {
-                $http.get('/tasks').then(function (r) {
+                var url = '/tasks?';
+                if ($scope.filterStatus) {
+                    url += 'status=' + $scope.filterStatus;
+                }
+
+                $http.get(url).then(function (r) {
                     $scope.tasks = r.data;
                     $scope.gridOptions.data = r.data;
  

@@ -18,12 +18,13 @@ namespace Tasks.Api
     public class TaskController : Controller
     {
         [HttpGet("/tasks")]
-        public object[] Get()
+        public object[] Get(int? status)
         {
             using (var db = DbFactory.Create())
             {
                 return db.Tasks
-                    .Select(o => new { Name = o.Name, Priority = o.Priority, Status = o.Status, Created = o.Created, Due = o.Due })
+                    .Where(o => status == null || o.Status == status)
+                    .Select(o => new { Id = o.Id, Name = o.Name, Priority = o.Priority, Status = o.Status, Created = o.Created, Due = o.Due })
                     .ToArray();
             }
         }
@@ -47,6 +48,22 @@ namespace Tasks.Api
                 db.SaveChanges();
             }
         }
+
+        [HttpPost("/tasks/{id}/status")]
+        public void UpdateStatus(int id, [FromBody]NewValue val)
+        {
+            using (var db = DbFactory.Create())
+            {
+                var task = db.Tasks.First(o => o.Id == id);
+                task.Status = val.val;
+                db.SaveChanges();
+            }
+        }
+    }
+
+    public class NewValue
+    {
+        public int val { get; set; }
     }
 
     public class Task
