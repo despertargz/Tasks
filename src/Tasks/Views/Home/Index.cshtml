@@ -28,18 +28,12 @@
                 </div>
                 <div class="form-group">
                     <label>Priority</label>
-                    <select class="form-control" ng-model="priorityList[selectedTask.Priority]">
-                        <option ng-repeat="priority in priorityList" 
-                                value="$index">{{priority}}
-                        </option>
+                    <select class="form-control" ng-model="selectedTask.Priority" ng-options="id*1 as name for (id,name) in priorityList" >
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <select class="form-control" ng-model="statusList[selectedTask.Status]">
-                        <option ng-repeat="status in statusList" 
-                                value="$index">{{status}}
-                        </option>
+                    <select class="form-control" ng-model="selectedTask.Status" ng-options="id*1 as name for (id,name) in statusList">
                     </select>
                 </div>
                 <div class="form-group">
@@ -51,6 +45,7 @@
     </div>
     <script>
         var app = angular.module('TaskApp', ['ui.grid', 'ui.grid.selection']);
+
         app.controller('HomeCtrl', function ($scope, $http, $timeout) {
             $scope.gridOptions = {
                 enableRowSelection: true,
@@ -64,19 +59,8 @@
                 $scope.gridApi = gridApi;
                 gridApi.selection.on.rowSelectionChanged($scope, function (row) {
                     $scope.selectedTask = row.entity;
-                    console.log($scope.statusList[$scope.selectedTask.Status]);
-                    console.log($scope.priorityList[$scope.selectedTask.Priority]);
-                    console.log($scope.selectedTask);
-                    //$scope.$apply();
                 });
             };
-
-
-            //$scope.toggleRowSelection = function () {
-            //    $scope.gridApi.selection.clearSelectedRows();
-            //    $scope.gridOptions.enableRowSelection = !$scope.gridOptions.enableRowSelection;
-            //    $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.OPTIONS);
-            //};
 
             $scope.newTask = function () {
                 $http.post('/tasks').then(function () {
@@ -84,19 +68,17 @@
                 });
             };
             
-            $scope.statusList = [
-                '',
-                'Pending',
-                'Working',
-                'Completed'
-            ];
+            $scope.statusList = {
+                1: 'Pending',
+                2: 'Working',
+                3: 'Completed'
+            };
 
-            $scope.priorityList = [
-                '',
-                'Low',
-                'Normal',
-                'High'
-            ];
+            $scope.priorityList = {
+                1: 'Low',
+                2: 'Normal',
+                3: 'High'
+            };
             
             $scope.loadTasks = function () {
                 $http.get('/tasks').then(function (r) {
@@ -108,18 +90,19 @@
                     //        $scope.gridApi.selection.selectRow($scope.gridOptions.data[0]);
                     //    }
                     //});
-
    
                 });
             };
-
 
             $scope.selectedTask = {};
 
             $scope.loadTasks();
 
- 
         });
+    </script>
+
+    <script>
+
     </script>
 </body>
 
