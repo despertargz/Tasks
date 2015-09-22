@@ -1,4 +1,8 @@
-﻿<head>
+﻿<!DOCTYPE html> <!-- required by grid -->
+<html>
+
+
+<head>
     <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -18,7 +22,7 @@
     <script src="~/lib/momentjs/moment.js"></script>
 </head>
 
-<body ng-app="TaskApp">
+<body ng-app="TaskApp" style="padding:30px">
     <div ng-controller="HomeCtrl">
         <button class="btn btn-success" ng-click="newTask()">New</button>
         <select class="form-control" ng-model="filterStatus" ng-change="loadTasks()" ng-options="id*1 as name for (id,name) in statusList"></select>
@@ -32,13 +36,11 @@
                 </div>
                 <div class="form-group">
                     <label>Priority</label>
-                    <select class="form-control" ng-model="selectedTask.Priority" ng-change="updatePriority()" ng-options="id*1 as name for (id,name) in priorityList" >
-                    </select>
+                    <select class="form-control" ng-model="selectedTask.Priority" ng-change="updatePriority()" ng-options="id*1 as name for (id,name) in priorityList"></select>
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <select class="form-control" ng-model="selectedTask.Status" ng-change="updateStatus()" ng-options="id*1 as name for (id,name) in statusList">
-                    </select>
+                    <select class="form-control" ng-model="selectedTask.Status" ng-change="updateStatus()" ng-options="id*1 as name for (id,name) in statusList"></select>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
@@ -52,10 +54,6 @@
         </div>
     </div>
     <script>
-        function showPriority(val) {
-            return 
-
-        }
 
         var app = angular.module('TaskApp', ['ui.grid', 'ui.grid.selection']);
 
@@ -80,7 +78,7 @@
                     return "";
                 }
 
-                return moment(val).format("MM/DD/YY"); 
+                return moment(val).format("MM/DD/YY");
             }
 
             $scope.testVal = function () {
@@ -103,7 +101,7 @@
                     $scope.loadTasks();
                 });
             };
-            
+
             $scope.statusList = {
                 1: 'Pending',
                 2: 'Working',
@@ -123,7 +121,7 @@
                 });
 
             }
-            
+
             $scope.loadTasks = function () {
                 var url = '/tasks?';
                 if ($scope.filterStatus) {
@@ -133,13 +131,13 @@
                 $http.get(url).then(function (r) {
                     $scope.tasks = r.data;
                     $scope.gridOptions.data = r.data;
- 
+
                     //$timeout(function () {
                     //    if ($scope.gridApi.selection.selectRow) {
                     //        $scope.gridApi.selection.selectRow($scope.gridOptions.data[0]);
                     //    }
                     //});
-   
+
                 });
             };
 
@@ -150,8 +148,10 @@
         });
     </script>
 
-    <script>
-
-    </script>
+  
 </body>
+
+</html>
+
+
 
