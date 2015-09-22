@@ -14,6 +14,8 @@
     <script src="~/lib/angular-ui-grid/ui-grid.min.js"></script>
 
     <link rel="stylesheet" href="~/lib/angular-ui-grid/ui-grid.min.css" />
+
+    <script src="~/lib/momentjs/moment.js"></script>
 </head>
 
 <body ng-app="TaskApp">
@@ -24,7 +26,7 @@
             <form class="form-horizontal">
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" />
+                    <input type="text" class="form-control" ng-model="selectedTask.Name" />
                 </div>
                 <div class="form-group">
                     <label>Priority</label>
@@ -38,19 +40,48 @@
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea></textarea>
+                    <textarea ng-model="selectedTask.Description" class="form-control"></textarea>
                 </div>
             </form>
         </div>
     </div>
     <script>
+        function showPriority(val) {
+            return 
+
+        }
+
         var app = angular.module('TaskApp', ['ui.grid', 'ui.grid.selection']);
 
         app.controller('HomeCtrl', function ($scope, $http, $timeout) {
             $scope.gridOptions = {
                 enableRowSelection: true,
-                enableRowHeaderSelection: false
+                enableRowHeaderSelection: false,
+                columnDefs: [
+                    { name: 'Name', field: 'Name' },
+                    { name: 'Status', cellTemplate: '<span>{{ grid.appScope.displayStatus(COL_FIELD) }}</span>' },
+                    { name: 'Priority', cellTemplate: '<span>{{ grid.appScope.priorityList[(COL_FIELD)] }}</span>' },
+                    { name: 'Created', cellTemplate: "<span>{{ grid.appScope.formatDate(COL_FIELD)}}</span>" },
+                    { name: 'Due', cellTemplate: "<span>{{ grid.appScope.formatDate(COL_FIELD) }}</span>" }
+                ]
             };
+
+            $scope.displayStatus = function (status) {
+                console.log("STATUS: " + status);
+                return $scope.statusList[status];
+            };
+
+            $scope.formatDate = function (val) {
+                if (val == undefined) {
+                    return "";
+                }
+
+                return moment(val).format("MM/DD/YY"); 
+            }
+
+            $scope.testVal = function () {
+                return "TEST!";
+            }
 
             $scope.gridOptions.multiSelect = false;
             $scope.gridOptions.modifierKeysToMultiSelect = false;
