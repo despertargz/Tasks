@@ -23,7 +23,7 @@ namespace Tasks.Api
             using (var db = DbFactory.Create())
             {
                 return db.Tasks
-                    .Where(o => status == null || o.Status == status)
+                    .Where(o => o.Status != 6 && (status == null || (o.Status == status)))
                     .Select(o => new { Description = o.Description, Id = o.Id, Name = o.Name, Priority = o.Priority, Status = o.Status, Created = o.Created, Due = o.Due })
                     .ToArray();
             }
