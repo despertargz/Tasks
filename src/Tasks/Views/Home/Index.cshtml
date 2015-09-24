@@ -3,28 +3,22 @@
 
 
 <head>
-    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
-    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
-
-    <script src="~/lib/angularjs/angular.min.js"></script>
-
-    <script src="~/lib/angular-ui-grid/ui-grid.min.js"></script>
-
     <link rel="stylesheet" href="~/lib/angular-ui-grid/ui-grid.min.css" />
 
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+    <script src="~/lib/angularjs/angular.min.js"></script>
+    <script src="~/lib/angular-ui-grid/ui-grid.min.js"></script>
     <script src="~/lib/momentjs/moment.js"></script>
 
     <style>
         body { height: 100%; overflow: auto }
         #left { height: 100%; width: 75%; box-sizing:border-box; display:inline-block; margin-right:30px }
         #right { height: 100%; width: 20%; box-sizing:border-box; display:inline-block }
+        .my-row { margin-top: 10px;}
     </style>
 </head>
 
@@ -35,9 +29,14 @@
                 <button class="btn btn-success" ng-click="newTask()">New</button>
             </div>
             <div class="col-sm-1">
+                <input type="text" placeholder='new task name' ng-keypress="enterForNewTask($event)" ng-model="newTaskName" class="form-control" />
+            </div>
+        </div>    
+        <div class="row my-row">
+            <div class="col-sm-1">
                 <select class="form-control" ng-model="filterStatus" ng-change="loadTasks()" ng-options="id*1 as name for (id,name) in statusList"></select>
             </div>
-        </div>       
+        </div>   
         <div id="left">
             <div ui-grid="gridOptions" ui-grid-selection></div>
         </div>
@@ -88,17 +87,19 @@
 
             $scope.filterStatus = null;
 
+            $scope.enterForNewTask = function (e) {
+                if (e.which == 13) {
+                    $scope.newTask();
+                }
+            };
+
             $scope.formatDate = function (val) {
                 if (val == undefined) {
                     return "";
                 }
 
                 return moment(val).format("MM/DD/YY");
-            }
-
-            $scope.testVal = function () {
-                return "TEST!";
-            }
+            };
 
             $scope.gridOptions.multiSelect = false;
             $scope.gridOptions.modifierKeysToMultiSelect = false;
@@ -112,7 +113,9 @@
             };
 
             $scope.newTask = function () {
-                $http.post('/tasks').then(function () {
+                var data = { Name: $scope.newTaskName };
+                $scope.newTaskName = '';
+                $http.post('/tasks', data).then(function () {
                     $scope.loadTasks();
                 });
             };

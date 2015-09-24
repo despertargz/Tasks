@@ -30,7 +30,7 @@ namespace Tasks.Api
         }
 
         [HttpPost("/tasks")]
-        public void Post()
+        public void Post([FromBody]NewTask newTask)
         {
             using (var db = DbFactory.Create())
             {
@@ -39,10 +39,10 @@ namespace Tasks.Api
                     Priority = 3,
                     Status = 1,
                     Created = DateTime.Now,
-                    Completed = null,
                     Updated = DateTime.Now,
+                    Completed = null,
                     Due = null,
-                    Name = "New Task",
+                    Name = newTask.Name
                 });
 
                 db.SaveChanges();
@@ -82,7 +82,6 @@ namespace Tasks.Api
                     {
                         task.Due = DateTime.Parse(body.Value);
                     }
-                    
                 }
 
                 db.SaveChanges();
@@ -92,11 +91,20 @@ namespace Tasks.Api
         }
     }
 
+    // http bodys
+
     public class NewValue
     {
         public string Field { get; set; }
         public string Value { get; set; }
     }
+
+    public class NewTask
+    {
+        public string Name { get; set; }
+    }
+
+    // db models
 
     public class Task
     {
