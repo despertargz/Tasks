@@ -24,7 +24,7 @@ namespace Tasks.Api
             {
                 return db.Tasks
                     .Where(o => status == null || o.Status == status)
-                    .Select(o => new { Id = o.Id, Name = o.Name, Priority = o.Priority, Status = o.Status, Created = o.Created, Due = o.Due })
+                    .Select(o => new { Description = o.Description, Id = o.Id, Name = o.Name, Priority = o.Priority, Status = o.Status, Created = o.Created, Due = o.Due })
                     .ToArray();
             }
         }
@@ -36,7 +36,7 @@ namespace Tasks.Api
             {
                 db.Tasks.Add(new Task()
                 {
-                    Priority = 3,
+                    Priority = 2,
                     Status = 1,
                     Created = DateTime.Now,
                     Completed = null,
@@ -49,21 +49,53 @@ namespace Tasks.Api
             }
         }
 
-        [HttpPost("/tasks/{id}/status")]
-        public void UpdateStatus(int id, [FromBody]NewValue val)
+        [HttpPost("/tasks/{id}")]
+        public void Update(int id, [FromBody]NewValue body)
         {
             using (var db = DbFactory.Create())
             {
                 var task = db.Tasks.First(o => o.Id == id);
-                task.Status = val.val;
+               
+                if (body.Field == "Status")
+                {
+                    task.Status = int.Parse(body.Value);
+                    if (body.Value == "3")
+                    {
+                        task.Completed = DateTime.Now;
+                    }
+                }
+                else if (body.Field == "Priority")
+                {
+                    task.Priority = int.Parse(body.Value);
+                }
+                else if (body.Field == "Name")
+                {
+                    task.Name = body.Value;
+                }
+                else if (body.Field == "Description")
+                {
+                    task.Description = body.Value;
+                }
+                else if (body.Field == "Due")
+                {
+                    if (body.Value != null)
+                    {
+                        task.Due = DateTime.Parse(body.Value);
+                    }
+                    
+                }
+
                 db.SaveChanges();
             }
+
+            
         }
     }
 
     public class NewValue
     {
-        public int val { get; set; }
+        public string Field { get; set; }
+        public string Value { get; set; }
     }
 
     public class Task
@@ -71,14 +103,15 @@ namespace Tasks.Api
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public int Priority { get; set; }
+        public int Status { get; set; }
         public virtual List<Comment> Comments { get; set; }
         public virtual List<Tag> Tags { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Completed { get; set; }
         public DateTime? Due { get; set; }
         public DateTime Updated { get; set; }
-        public int Priority { get; set; }
-        public int Status { get; set; }
+
     }
 
     public class Comment

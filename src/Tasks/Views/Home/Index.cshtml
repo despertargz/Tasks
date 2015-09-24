@@ -20,35 +20,49 @@
     <link rel="stylesheet" href="~/lib/angular-ui-grid/ui-grid.min.css" />
 
     <script src="~/lib/momentjs/moment.js"></script>
+
+    <style>
+        #left { width: 75%; box-sizing:border-box; display:inline-block; margin-right:30px }
+        #right { width: 20%; box-sizing:border-box; display:inline-block }
+    </style>
 </head>
 
 <body ng-app="TaskApp" style="padding:30px">
     <div ng-controller="HomeCtrl">
-        <button class="btn btn-success" ng-click="newTask()">New</button>
-        <select class="form-control" ng-model="filterStatus" ng-change="loadTasks()" ng-options="id*1 as name for (id,name) in statusList"></select>
-
-        <div ui-grid="gridOptions" ui-grid-selection style="width: 100%; height:300px"></div>
-        <div>
+        <div class="row">
+            <div class="col-sm-1">
+                <button class="btn btn-success" ng-click="newTask()">New</button>
+            </div>
+            <div class="col-sm-1">
+                <select class="form-control" ng-model="filterStatus" ng-change="loadTasks()" ng-options="id*1 as name for (id,name) in statusList"></select>
+            </div>
+        </div>       
+        <div id="left">
+            <div ui-grid="gridOptions" ui-grid-selection style="height:300px"></div>
+        </div>
+        <div id="right">
             <form class="form-horizontal">
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" ng-model="selectedTask.Name" />
+                    <input type="text" class="form-control" ng-model="selectedTask.Name" ng-blur="updateField('Name')" />
                 </div>
                 <div class="form-group">
                     <label>Priority</label>
-                    <select class="form-control" ng-model="selectedTask.Priority" ng-change="updatePriority()" ng-options="id*1 as name for (id,name) in priorityList"></select>
+                    <select class="form-control" ng-model="selectedTask.Priority" ng-change="updateField('Priority')"
+                             ng-options="id*1 as name for (id,name) in priorityList"></select>
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <select class="form-control" ng-model="selectedTask.Status" ng-change="updateStatus()" ng-options="id*1 as name for (id,name) in statusList"></select>
+                    <select class="form-control" ng-model="selectedTask.Status" ng-change="updateField('Status')" 
+                            ng-options="id*1 as name for (id,name) in statusList"></select>
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea ng-model="selectedTask.Description" class="form-control"></textarea>
+                    <textarea ng-model="selectedTask.Description" class="form-control" ng-blur="updateField('Description')"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Due</label>
-                    <input type="datetime" class="form-control" ng-model="selectedTask.Due" />
+                    <input type="datetime" class="form-control" ng-model="selectedTask.Due" ng-blur="updateField('Due')" />
                 </div>
             </form>
         </div>
@@ -62,7 +76,7 @@
                 enableRowSelection: true,
                 enableRowHeaderSelection: false,
                 columnDefs: [
-                    { name: 'Id', field: 'Id' },
+                    { name: 'Id', visible: false },
                     { name: 'Name', field: 'Name' },
                     { name: 'Status', cellTemplate: '<span>{{ grid.appScope.statusList[(COL_FIELD)] }}</span>' },
                     { name: 'Priority', cellTemplate: '<span>{{ grid.appScope.priorityList[(COL_FIELD)] }}</span>' },
@@ -103,27 +117,34 @@
             };
 
             $scope.statusList = {
+                0: 'All',
                 1: 'Pending',
                 2: 'Working',
-                3: 'Completed'
+                3: 'Completed',
+                4: 'Waiting',
+                5: 'Blocked',
+                6: 'Deleted'
             };
 
             $scope.priorityList = {
-                1: 'Low',
-                2: 'Normal',
-                3: 'High'
+                0: 'All',
+                1: 'Very Low',
+                2: 'Low',
+                3: 'Normal',
+                4: 'High',
+                5: 'Very High'
             };
 
-            $scope.updateStatus = function () {
-                var data = { val: $scope.selectedTask.Status }
-                $http.post('/tasks/' + $scope.selectedTask.Id + "/status", data).then(function () {
-                    console.log('updated');
+            $scope.updateField = function (field) {
+                var data = { Field: field, Value: $scope.selectedTask[field] };
+                $http.post('/tasks/' + $scope.selectedTask.Id, data).then(function () {
+                    console.log('updated!');
                 });
-
             }
 
             $scope.loadTasks = function () {
                 var url = '/tasks?';
+
                 if ($scope.filterStatus) {
                     url += 'status=' + $scope.filterStatus;
                 }
