@@ -36,7 +36,7 @@ namespace Tasks.Api
             {
                 db.Tasks.Add(new Task()
                 {
-                    Priority = 2,
+                    Priority = 3,
                     Status = 1,
                     Created = DateTime.Now,
                     Completed = null,

@@ -22,13 +22,14 @@
     <script src="~/lib/momentjs/moment.js"></script>
 
     <style>
-        #left { width: 75%; box-sizing:border-box; display:inline-block; margin-right:30px }
-        #right { width: 20%; box-sizing:border-box; display:inline-block }
+        body { height: 100%; overflow: auto }
+        #left { height: 100%; width: 75%; box-sizing:border-box; display:inline-block; margin-right:30px }
+        #right { height: 100%; width: 20%; box-sizing:border-box; display:inline-block }
     </style>
 </head>
 
 <body ng-app="TaskApp" style="padding:30px">
-    <div ng-controller="HomeCtrl">
+    <div ng-controller="HomeCtrl" style="height:100%">
         <div class="row">
             <div class="col-sm-1">
                 <button class="btn btn-success" ng-click="newTask()">New</button>
@@ -38,7 +39,7 @@
             </div>
         </div>       
         <div id="left">
-            <div ui-grid="gridOptions" ui-grid-selection style="height:300px"></div>
+            <div ui-grid="gridOptions" ui-grid-selection></div>
         </div>
         <div id="right">
             <form class="form-horizontal">
