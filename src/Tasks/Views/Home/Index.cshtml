@@ -128,7 +128,14 @@
                 var data = { Name: $scope.newTaskName };
                 $scope.newTaskName = '';
                 $http.post('/tasks', data).then(function (r) {
-                    $scope.loadTasks(r.data.Id);
+                    $scope.loadTasks();
+                    $scope.getTask(r.data.Id);
+                });
+            };
+
+            $scope.getTask = function (id) {
+                $http.get('/tasks/' + id).then(function (r) {
+                    $scope.selectedTask = r.data;
                 });
             };
 
@@ -164,7 +171,7 @@
                 });
             }
 
-            $scope.loadTasks = function (selectedTaskId) {
+            $scope.loadTasks = function () {
                 var url = '/tasks?';
 
                 if ($scope.filterStatus) {
@@ -178,7 +185,6 @@
                 $http.get(url).then(function (r) {
                     $scope.tasks = r.data;
                     $scope.gridOptions.data = r.data;
-                    $scope.selectedTask = $scope.tasks.filter(function (o) { return o.Id == selectedTaskId; })[0];
 
                     //$timeout(function () {
                     //    if ($scope.gridApi.selection.selectRow) {

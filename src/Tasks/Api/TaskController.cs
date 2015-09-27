@@ -106,6 +106,24 @@ namespace Tasks.Api
             }
         }
 
+        [HttpGet("/tasks/{id}")]
+        public object GetTask(int id)
+        {
+            using (var db = DbFactory.Create())
+            {
+                return db.Tasks.Select(o => new {
+                    Description = o.Description,
+                    Id = o.Id,
+                    Name = o.Name,
+                    Priority = o.Priority,
+                    Status = o.Status,
+                    Created = o.Created,
+                    Due = o.Due,
+                    CategoryId = o.CategoryId
+                }).First(o => o.Id == id);
+            }
+        }
+
         [HttpGet("/categories")]
         public Category[] GetCategories()
         {
