@@ -18,8 +18,7 @@ namespace Tasks.Api
             {
                 return db.Tasks
                     .Where(o => 
-                        o.Status != 6 && 
-                        (status == null || o.Status == status) &&
+                        ((status == null && o.Status != 6 && o.Status != 3) || o.Status == status) &&
                         (category == null || o.CategoryId == category)
                     )
                     .Select(o => new {
@@ -32,16 +31,17 @@ namespace Tasks.Api
                         Due = o.Due,
                         CategoryId = o.CategoryId
                     })
+                    .OrderByDescending(o => o.Priority)
                     .ToArray();
             }
         }
 
         [HttpPost("/tasks")]
-        public void Post([FromBody]NewTask newTask)
+        public object Post([FromBody]NewTask newTask)
         {
             using (var db = DbFactory.Create())
             {
-                db.Tasks.Add(new Task()
+                var task = new Task()
                 {
                     Priority = 3,
                     Status = 1,
@@ -51,9 +51,11 @@ namespace Tasks.Api
                     Due = null,
                     Name = newTask.Name,
                     CategoryId = 4,
-                });
+                };
+                db.Tasks.Add(task);
 
                 db.SaveChanges();
+                return new { Id = task.Id };
             }
         }
 
