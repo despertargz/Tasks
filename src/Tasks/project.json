@@ -24,7 +24,7 @@
   "frameworks": {
     "dnx451": {
       "dependencies": {
-        "Tasks.Db": "1.0.0-*"
+"Tasks.Db": "1.0.0-*"
       }
     }
   },

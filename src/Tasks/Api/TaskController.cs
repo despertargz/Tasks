@@ -77,6 +77,14 @@ namespace Tasks.Api
                     {
                         task.Due = DateTime.Parse(body.Value);
                     }
+                    else if (string.IsNullOrWhiteSpace(body.Value))
+                    {
+                        task.Due = null;
+                    }
+                }
+                else if (body.Field == "CategoryId")
+                {
+                    task.CategoryId = int.Parse(body.Value);
                 }
 
                 db.SaveChanges();

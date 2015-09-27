@@ -57,6 +57,11 @@
                             ng-options="id*1 as name for (id,name) in statusList"></select>
                 </div>
                 <div class="form-group">
+                    <label>Category</label>
+                    <select class="form-control" ng-model="selectedTask.CategoryId" ng-change="updateField('CategoryId')"
+                            ng-options="o.Id*1 as o.Name for o in categories"></select>
+                </div>
+                <div class="form-group">
                     <label>Description</label>
                     <textarea ng-model="selectedTask.Description" class="form-control" ng-blur="updateField('Description')"></textarea>
                 </div>
@@ -120,6 +125,12 @@
                 });
             };
 
+            $scope.loadCategories = function () {
+                $http.get('/categories').then(function (r) {
+                    $scope.categories = r.data;
+                });
+            };
+
             $scope.statusList = {
                 0: 'All',
                 1: 'Pending',
@@ -169,7 +180,7 @@
             $scope.selectedTask = {};
 
             $scope.loadTasks();
-
+            $scope.loadCategories();
         });
     </script>
 
