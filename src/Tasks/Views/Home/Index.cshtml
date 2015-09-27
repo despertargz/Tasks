@@ -25,7 +25,7 @@
 <body ng-app="TaskApp" style="padding:30px">
     <div ng-controller="HomeCtrl" style="height:100%">
         <div class="row">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <!--<button class="btn btn-success" ng-click="newTask()" style="display:inline-block">New</button>-->
                 <input type="text" placeholder='New Task' ng-keypress="enterForNewTask($event)" ng-model="newTaskName" class="form-control" style="display:inline-block" />
             </div>
@@ -37,7 +37,7 @@
             <div class="col-sm-1">
                 <select class="form-control" ng-model="filterStatus" ng-change="loadTasks()" ng-options="id*1 as name for (id,name) in statusList"></select>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 <select class="form-control" ng-model="filterCategory" ng-change="loadTasks()" ng-options="o.Id*1 as o.Name for o in categories"></select>
             </div>
         </div>   
