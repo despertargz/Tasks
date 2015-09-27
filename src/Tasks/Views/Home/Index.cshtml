@@ -26,15 +26,19 @@
     <div ng-controller="HomeCtrl" style="height:100%">
         <div class="row">
             <div class="col-sm-1">
-                <button class="btn btn-success" ng-click="newTask()">New</button>
+                <button class="btn btn-success" ng-click="newTask()" style="display:inline-block">New</button>
+                <input type="text" placeholder='new task name' ng-keypress="enterForNewTask($event)" ng-model="newTaskName" class="form-control" style="display:inline-block" />
             </div>
             <div class="col-sm-1">
-                <input type="text" placeholder='new task name' ng-keypress="enterForNewTask($event)" ng-model="newTaskName" class="form-control" />
+                
             </div>
         </div>    
         <div class="row my-row">
             <div class="col-sm-1">
                 <select class="form-control" ng-model="filterStatus" ng-change="loadTasks()" ng-options="id*1 as name for (id,name) in statusList"></select>
+            </div>
+            <div class="col-sm-1">
+                <select class="form-control" ng-model="filterCategory" ng-change="loadTasks()" ng-options="o.Id*1 as o.Name for o in categories"></select>
             </div>
         </div>   
         <div id="left">
@@ -161,7 +165,11 @@
                 var url = '/tasks?';
 
                 if ($scope.filterStatus) {
-                    url += 'status=' + $scope.filterStatus;
+                    url += 'status=' + $scope.filterStatus + "&";
+                }
+
+                if ($scope.filterCategory) {
+                    url += "category=" + $scope.filterCategory + "&";
                 }
 
                 $http.get(url).then(function (r) {

@@ -12,13 +12,26 @@ namespace Tasks.Api
     public class TaskController : Controller
     {
         [HttpGet("/tasks")]
-        public object[] Get(int? status)
+        public object[] Get(int? status, int? category)
         {
             using (var db = DbFactory.Create())
             {
                 return db.Tasks
-                    .Where(o => o.Status != 6 && (status == null || (o.Status == status)))
-                    .Select(o => new { Description = o.Description, Id = o.Id, Name = o.Name, Priority = o.Priority, Status = o.Status, Created = o.Created, Due = o.Due })
+                    .Where(o => 
+                        o.Status != 6 && 
+                        (status == null || o.Status == status) &&
+                        (category == null || o.CategoryId == category)
+                    )
+                    .Select(o => new {
+                        Description = o.Description,
+                        Id = o.Id,
+                        Name = o.Name,
+                        Priority = o.Priority,
+                        Status = o.Status,
+                        Created = o.Created,
+                        Due = o.Due,
+                        CategoryId = o.CategoryId
+                    })
                     .ToArray();
             }
         }
