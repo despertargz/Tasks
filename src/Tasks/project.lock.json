@@ -2183,6 +2183,8 @@
       "Microsoft.VisualStudio.Web.BrowserLink.Loader >= 14.0.0-beta5",
       "EntityFramework >= 6.1.3"
     ],
-    "DNX,Version=v4.5.1": []
+    "DNX,Version=v4.5.1": [
+      "Tasks.Db >= 1.0.0-*"
+    ]
   }
 }

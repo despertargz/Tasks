@@ -3,17 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
+using Tasks.Db;
 
 namespace Tasks.Api
 {
-    public static class DbFactory
-    {
-        public static TaskDb Create()
-        {
-            return new TaskDb("data source=localhost\\sqlexpress; initial catalog=TaskDb; integrated security=true;");
-        }
-    }
+
 
     public class TaskController : Controller
     {
@@ -42,7 +36,8 @@ namespace Tasks.Api
                     Updated = DateTime.Now,
                     Completed = null,
                     Due = null,
-                    Name = newTask.Name
+                    Name = newTask.Name,
+                    CategoryId = 4,
                 });
 
                 db.SaveChanges();
@@ -55,7 +50,7 @@ namespace Tasks.Api
             using (var db = DbFactory.Create())
             {
                 var task = db.Tasks.First(o => o.Id == id);
-               
+
                 if (body.Field == "Status")
                 {
                     task.Status = int.Parse(body.Value);
@@ -86,8 +81,15 @@ namespace Tasks.Api
 
                 db.SaveChanges();
             }
+        }
 
-            
+        [HttpGet("/categories")]
+        public Category[] GetCategories()
+        {
+            using (var db = DbFactory.Create())
+            {
+                return db.Categories.ToArray();
+            }
         }
     }
 
@@ -103,49 +105,9 @@ namespace Tasks.Api
     {
         public string Name { get; set; }
     }
-
-    // db models
-
-    public class Task
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public int Priority { get; set; }
-        public int Status { get; set; }
-        public virtual List<Comment> Comments { get; set; }
-        public virtual List<Tag> Tags { get; set; }
-        public DateTime Created { get; set; }
-        public DateTime? Completed { get; set; }
-        public DateTime? Due { get; set; }
-        public DateTime Updated { get; set; }
-
-    }
-
-    public class Comment
-    {
-        public int Id { get; set; }
-        public string Message { get; set; }
-        public DateTime Time { get; set; }
-    }
-
-    public class Tag
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class TaskDb : DbContext
-    {
-        public TaskDb(string conStr) : base(conStr)
-        {
-
-        }
-
-        public DbSet<Task> Tasks { get; set; }
-    }
-        
 }
+
+
 
 /*
 task
