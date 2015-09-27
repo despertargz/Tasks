@@ -16,7 +16,7 @@
 
     <style>
         body { height: 100%; overflow: auto }
-        #left { height: 100%; width: 75%; box-sizing:border-box; display:inline-block; margin-right:30px }
+        #left { height: 100%; width: 75%; box-sizing:border-box; float: left; margin-top:15px; margin-right:30px }
         #right { height: 100%; width: 20%; box-sizing:border-box; display:inline-block }
         .my-row { margin-top: 10px;}
     </style>
@@ -25,9 +25,9 @@
 <body ng-app="TaskApp" style="padding:30px">
     <div ng-controller="HomeCtrl" style="height:100%">
         <div class="row">
-            <div class="col-sm-1">
-                <button class="btn btn-success" ng-click="newTask()" style="display:inline-block">New</button>
-                <input type="text" placeholder='new task name' ng-keypress="enterForNewTask($event)" ng-model="newTaskName" class="form-control" style="display:inline-block" />
+            <div class="col-sm-2">
+                <!--<button class="btn btn-success" ng-click="newTask()" style="display:inline-block">New</button>-->
+                <input type="text" placeholder='New Task' ng-keypress="enterForNewTask($event)" ng-model="newTaskName" class="form-control" style="display:inline-block" />
             </div>
             <div class="col-sm-1">
                 
@@ -41,40 +41,43 @@
                 <select class="form-control" ng-model="filterCategory" ng-change="loadTasks()" ng-options="o.Id*1 as o.Name for o in categories"></select>
             </div>
         </div>   
-        <div id="left">
-            <div ui-grid="gridOptions" ui-grid-selection></div>
+        <div class="row" >
+            <div id="left">
+                <div ui-grid="gridOptions" ui-grid-selection></div>
+            </div>
+            <div id="right">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" ng-model="selectedTask.Name" ng-blur="updateField('Name')" />
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select class="form-control" ng-model="selectedTask.Priority" ng-change="updateField('Priority')"
+                                ng-options="id*1 as name for (id,name) in priorityList"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control" ng-model="selectedTask.Status" ng-change="updateField('Status')"
+                                ng-options="id*1 as name for (id,name) in statusList"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select class="form-control" ng-model="selectedTask.CategoryId" ng-change="updateField('CategoryId')"
+                                ng-options="o.Id*1 as o.Name for o in categories"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea ng-model="selectedTask.Description" class="form-control" ng-blur="updateField('Description')" style="height:400px"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Due</label>
+                        <input type="datetime" class="form-control" ng-model="selectedTask.Due" ng-blur="updateField('Due')" />
+                    </div>
+                </form>
+            </div>
         </div>
-        <div id="right">
-            <form class="form-horizontal">
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" class="form-control" ng-model="selectedTask.Name" ng-blur="updateField('Name')" />
-                </div>
-                <div class="form-group">
-                    <label>Priority</label>
-                    <select class="form-control" ng-model="selectedTask.Priority" ng-change="updateField('Priority')"
-                             ng-options="id*1 as name for (id,name) in priorityList"></select>
-                </div>
-                <div class="form-group">
-                    <label>Status</label>
-                    <select class="form-control" ng-model="selectedTask.Status" ng-change="updateField('Status')" 
-                            ng-options="id*1 as name for (id,name) in statusList"></select>
-                </div>
-                <div class="form-group">
-                    <label>Category</label>
-                    <select class="form-control" ng-model="selectedTask.CategoryId" ng-change="updateField('CategoryId')"
-                            ng-options="o.Id*1 as o.Name for o in categories"></select>
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea ng-model="selectedTask.Description" class="form-control" ng-blur="updateField('Description')"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Due</label>
-                    <input type="datetime" class="form-control" ng-model="selectedTask.Due" ng-blur="updateField('Due')" />
-                </div>
-            </form>
-        </div>
+
     </div>
     <script>
 
