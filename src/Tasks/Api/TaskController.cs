@@ -8,16 +8,16 @@ using Tasks.Db;
 namespace Tasks.Api
 {
 
-
+    [Route("api")]
     public class TaskController : Controller
     {
-        [HttpGet("/tasks")]
+        [HttpGet("tasks")]
         public object[] Get(int? status, int? category)
         {
             using (var db = DbFactory.Create())
             {
                 return db.Tasks
-                    .Where(o => 
+                    .Where(o =>
                         ((status == null && o.Status != 6 && o.Status != 3) || o.Status == status) &&
                         (category == null || o.CategoryId == category)
                     )
@@ -29,14 +29,15 @@ namespace Tasks.Api
                         Status = o.Status,
                         Created = o.Created,
                         Due = o.Due,
-                        CategoryId = o.CategoryId
+                        CategoryId = o.CategoryId,
+                        Comments = o.Comments
                     })
                     .OrderByDescending(o => o.Priority)
                     .ToArray();
             }
         }
 
-        [HttpPost("/tasks")]
+        [HttpPost("tasks")]
         public object Post([FromBody]NewTask newTask)
         {
             using (var db = DbFactory.Create())
@@ -59,7 +60,7 @@ namespace Tasks.Api
             }
         }
 
-        [HttpPost("/tasks/{id}")]
+        [HttpPost("tasks/{id}")]
         public void Update(int id, [FromBody]NewValue body)
         {
             using (var db = DbFactory.Create())
@@ -88,13 +89,13 @@ namespace Tasks.Api
                 }
                 else if (body.Field == "Due")
                 {
-                    if (body.Value != null)
-                    {
-                        task.Due = DateTime.Parse(body.Value);
-                    }
-                    else if (string.IsNullOrWhiteSpace(body.Value))
+                    if (string.IsNullOrWhiteSpace(body.Value))
                     {
                         task.Due = null;
+                    }
+                    else 
+                    {
+                        task.Due = DateTime.Parse(body.Value);
                     }
                 }
                 else if (body.Field == "CategoryId")
@@ -106,7 +107,7 @@ namespace Tasks.Api
             }
         }
 
-        [HttpGet("/tasks/{id}")]
+        [HttpGet("tasks/{id}")]
         public object GetTask(int id)
         {
             using (var db = DbFactory.Create())
@@ -119,12 +120,14 @@ namespace Tasks.Api
                     Status = o.Status,
                     Created = o.Created,
                     Due = o.Due,
-                    CategoryId = o.CategoryId
-                }).First(o => o.Id == id);
+                    CategoryId = o.CategoryId,
+                    Comments = o.Comments ?? new List<Comment>()
+                })
+                .First(o => o.Id == id);
             }
         }
 
-        [HttpGet("/categories")]
+        [HttpGet("categories")]
         public Category[] GetCategories()
         {
             using (var db = DbFactory.Create())
@@ -132,9 +135,42 @@ namespace Tasks.Api
                 return db.Categories.ToArray();
             }
         }
+
+        [HttpPost("categories")]
+        public object CreateCategory(NewCategory newCategory) 
+        {
+            using (var db = DbFactory.Create())
+            {
+                var category = new Category() { Name = newCategory.Name };
+                db.Categories.Add(category);
+                db.SaveChanges();
+
+                return new { Id = category.Id };
+            }
+        }
+
+        [HttpPost("tasks/{id}/comment")]
+        public void AddComment(int id, [FromBody]NewComment newComment)
+        {
+            using (var db = DbFactory.Create())
+            {
+                db.Comments.Add(new Comment() { Message = newComment.Message, Time = DateTime.Now, TaskId = id });
+                db.SaveChanges();
+            }
+        }
     }
 
     // http bodys
+
+    public class NewComment
+    {
+        public string Message { get; set; }
+    }
+
+    public class NewCategory
+    {
+        public string Name { get; set; }
+    }
 
     public class NewValue
     {
@@ -147,30 +183,3 @@ namespace Tasks.Api
         public string Name { get; set; }
     }
 }
-
-
-
-/*
-task
-	name
-	description
-	comments
-	status
-	created
-	completed
-	updated
-	due
-	alerts
-	priority
-	tags
-	
-	
-
-create task	
-filter tasks
-single task
-	add comment
-	update status
-	set due dat
-
-    */

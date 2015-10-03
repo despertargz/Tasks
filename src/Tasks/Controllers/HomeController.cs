@@ -12,5 +12,11 @@ namespace Tasks.Controllers
         {
             return View();
         }
+
+        [HttpGet("/categories")]
+        public IActionResult Categories()
+        {
+            return View();
+        }
     }
 }

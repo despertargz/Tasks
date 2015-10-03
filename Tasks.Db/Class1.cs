@@ -45,6 +45,8 @@ namespace Tasks.Db
         public int Id { get; set; }
         public string Message { get; set; }
         public DateTime Time { get; set; }
+
+        public int TaskId { get; set; }
     }
 
     public class Tag
@@ -67,5 +69,6 @@ namespace Tasks.Db
 
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }

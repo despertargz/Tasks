@@ -29,8 +29,10 @@
                 <!--<button class="btn btn-success" ng-click="newTask()" style="display:inline-block">New</button>-->
                 <input type="text" placeholder='New Task' ng-keypress="enterForNewTask($event)" ng-model="newTaskName" class="form-control" style="display:inline-block" />
             </div>
+            <div class="col-sm-8">
+            </div>
             <div class="col-sm-1">
-                
+                <a href="/categories" class="btn">Categories</a>
             </div>
         </div>    
         <div class="row my-row">
@@ -74,6 +76,19 @@
                         <label>Due</label>
                         <input type="datetime" class="form-control" ng-model="selectedTask.Due" ng-blur="updateField('Due')" />
                     </div>
+
+                    <div class="form-group">
+                        <label>Comments</label>
+                        <input type="text" class="form-control" ng-keypress="addComment($event)" ng-model="newComment" />
+                    </div>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <tr ng-repeat="comment in selectedTask.Comments">
+                                <td style="width:20px">{{ comment.Time | date:'MM/dd' }}</td>
+                                <td>{{comment.Message}}</td>
+                            </tr>
+                        </table>
+                    </div>
                 </form>
             </div>
         </div>
@@ -82,6 +97,8 @@
     <script>
 
         var app = angular.module('TaskApp', ['ui.grid', 'ui.grid.selection']);
+
+ 
 
         app.controller('HomeCtrl', function ($scope, $http, $timeout) {
             $scope.gridOptions = {
@@ -124,55 +141,47 @@
                 });
             };
 
+            $scope.addComment = function (e) {
+                if (e.which == 13) {
+                    var data = { Message: $scope.newComment };
+                    $scope.newComment = '';
+                    $http.post('/api/tasks/' + $scope.selectedTask.Id + '/comment', data).then(function () {
+                        $scope.selectedTask.Comments.push({ Time: moment().format("MM/DD"), Message: data.Message });
+
+                    })
+                }
+            };
+
             $scope.newTask = function () {
                 var data = { Name: $scope.newTaskName };
                 $scope.newTaskName = '';
-                $http.post('/tasks', data).then(function (r) {
+                $http.post('/api/tasks', data).then(function (r) {
                     $scope.loadTasks();
                     $scope.getTask(r.data.Id);
                 });
             };
 
             $scope.getTask = function (id) {
-                $http.get('/tasks/' + id).then(function (r) {
+                $http.get('/api/tasks/' + id).then(function (r) {
                     $scope.selectedTask = r.data;
                 });
             };
 
             $scope.loadCategories = function () {
-                $http.get('/categories').then(function (r) {
+                $http.get('/api/categories').then(function (r) {
                     $scope.categories = r.data;
                 });
             };
 
-            $scope.statusList = {
-                0: 'All',
-                1: 'Pending',
-                2: 'Working',
-                3: 'Completed',
-                4: 'Waiting',
-                5: 'Blocked',
-                6: 'Deleted'
-            };
-
-            $scope.priorityList = {
-                0: 'All',
-                1: 'Very Low',
-                2: 'Low',
-                3: 'Normal',
-                4: 'High',
-                5: 'Very High'
-            };
-
             $scope.updateField = function (field) {
                 var data = { Field: field, Value: $scope.selectedTask[field] };
-                $http.post('/tasks/' + $scope.selectedTask.Id, data).then(function () {
+                $http.post('/api/tasks/' + $scope.selectedTask.Id, data).then(function () {
                     console.log('updated!');
                 });
-            }
+            };
 
             $scope.loadTasks = function () {
-                var url = '/tasks?';
+                var url = '/api/tasks?';
 
                 if ($scope.filterStatus) {
                     url += 'status=' + $scope.filterStatus + "&";
@@ -193,6 +202,25 @@
                     //});
 
                 });
+            };
+
+            $scope.statusList = {
+                0: 'All',
+                1: 'Pending',
+                2: 'Working',
+                3: 'Completed',
+                4: 'Waiting',
+                5: 'Blocked',
+                6: 'Deleted'
+            };
+
+            $scope.priorityList = {
+                0: 'All',
+                1: 'Very Low',
+                2: 'Low',
+                3: 'Normal',
+                4: 'High',
+                5: 'Very High'
             };
 
             $scope.selectedTask = {};

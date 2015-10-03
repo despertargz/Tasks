@@ -1,0 +1,52 @@
+﻿<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="~/lib/angular-ui-grid/ui-grid.min.css" />
+
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+    <script src="~/lib/angularjs/angular.min.js"></script>
+    <script src="~/lib/angular-ui-grid/ui-grid.min.js"></script>
+    <script src="~/lib/momentjs/moment.js"></script>
+
+    <style>
+        body {
+            height: 100%;
+            overflow: auto;
+        }
+
+        #left {
+            height: 100%;
+            width: 65%;
+            box-sizing: border-box;
+            float: left;
+            margin-top: 15px;
+            margin-right: 30px;
+        }
+
+        #right {
+            height: 100%;
+            width: 30%;
+            box-sizing: border-box;
+            display: inline-block;
+        }
+
+        .my-row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body ng-app="TaskApp" >
+    <div ng-controller="CategoriesCtrl">
+        <h1>Categories</h1>
+        <p ng-model="msg"></p>
+    </div>
+
+    <script>
+        var app = angular.module('TaskApp', []);
+        app.controller('CategoriesCtrl', function ($scope) {
+            $scope.msg = "Hey there!";
+        });
+    </script>
+</body>
