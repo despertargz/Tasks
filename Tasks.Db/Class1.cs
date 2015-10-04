@@ -24,8 +24,8 @@ namespace Tasks.Db
         public string Description { get; set; }
         public int Priority { get; set; }
         public int Status { get; set; }
-        public virtual List<Comment> Comments { get; set; }
-        public virtual List<Tag> Tags { get; set; }
+        public virtual List<Comment> Comments { get; set; } = new List<Comment>();
+        public virtual List<Tag> Tags { get; set; } = new List<Tag>();
         public DateTime Created { get; set; }
         public DateTime? Completed { get; set; }
         public DateTime? Due { get; set; }

@@ -38,15 +38,30 @@
     </style>
 </head>
 <body ng-app="TaskApp" >
-    <div ng-controller="CategoriesCtrl">
-        <h1>Categories</h1>
-        <p ng-model="msg"></p>
+    <div ng-controller="CategoriesCtrl" style="margin: auto; width: 300px">
+        <a href="/">Tasks</a>
+        <input placeholder="New Category Name" class="form-control" ng-model="newCategory" ng-keypress="createCategory($event)" />
+        <ul class="list-group" style="margin-top: 15px">
+            <li class="list-group-item alert-dismissable" ng-repeat="c in categories">{{c.Name}}</li>
+        </ul>
     </div>
 
     <script>
         var app = angular.module('TaskApp', []);
-        app.controller('CategoriesCtrl', function ($scope) {
-            $scope.msg = "Hey there!";
+       
+        app.controller('CategoriesCtrl', function ($scope, $http) {
+            $http.get('/api/categories').then(function (r) {
+                $scope.categories = r.data;
+            });
+
+            $scope.createCategory = function (e) {
+                if (e.which == 13) {
+                    $http.post('/api/categories', { Name: $scope.newCategory }).then(function () {
+                        $scope.categories.push({ Name: $scope.newCategory });
+                        $scope.newCategory = '';
+                    });
+                }
+            }
         });
     </script>
 </body>

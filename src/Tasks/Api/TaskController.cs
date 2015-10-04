@@ -51,7 +51,7 @@ namespace Tasks.Api
                     Completed = null,
                     Due = null,
                     Name = newTask.Name,
-                    CategoryId = 4,
+                    CategoryId = newTask.Category ?? 3
                 };
                 db.Tasks.Add(task);
 
@@ -93,7 +93,7 @@ namespace Tasks.Api
                     {
                         task.Due = null;
                     }
-                    else 
+                    else
                     {
                         task.Due = DateTime.Parse(body.Value);
                     }
@@ -121,7 +121,7 @@ namespace Tasks.Api
                     Created = o.Created,
                     Due = o.Due,
                     CategoryId = o.CategoryId,
-                    Comments = o.Comments ?? new List<Comment>()
+                    Comments = o.Comments
                 })
                 .First(o => o.Id == id);
             }
@@ -137,7 +137,7 @@ namespace Tasks.Api
         }
 
         [HttpPost("categories")]
-        public object CreateCategory(NewCategory newCategory) 
+        public object CreateCategory([FromBody]NewCategory newCategory) 
         {
             using (var db = DbFactory.Create())
             {
@@ -181,5 +181,6 @@ namespace Tasks.Api
     public class NewTask
     {
         public string Name { get; set; }
+        public int? Category { get; set; }
     }
 }
