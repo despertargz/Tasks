@@ -24,20 +24,32 @@ namespace Tasks.Db
         public string Description { get; set; }
         public int Priority { get; set; }
         public int Status { get; set; }
-        public virtual List<Comment> Comments { get; set; } = new List<Comment>();
-        public virtual List<Tag> Tags { get; set; } = new List<Tag>();
         public DateTime Created { get; set; }
         public DateTime? Completed { get; set; }
         public DateTime? Due { get; set; }
         public DateTime Updated { get; set; }
+
         public Category Category { get; set; }
         public int CategoryId { get; set; }
+
+        public virtual List<Comment> Comments { get; set; } = new List<Comment>();
+        public virtual List<Tag> Tags { get; set; } = new List<Tag>();
+        public virtual List<Data> Data { get; set; } = new List<Data>();
     }
 
     public class Category
     {
         public int Id { get; set; }
         public string Name { get; set; }
+    }
+
+    public class Data
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
+
+        public int TaskId { get; set; }
     }
 
     public class Comment
@@ -70,5 +82,6 @@ namespace Tasks.Db
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Data> Data { get; set; }
     }
 }

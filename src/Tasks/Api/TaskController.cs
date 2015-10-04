@@ -30,7 +30,8 @@ namespace Tasks.Api
                         Created = o.Created,
                         Due = o.Due,
                         CategoryId = o.CategoryId,
-                        Comments = o.Comments
+                        Comments = o.Comments,
+                        Data = o.Data
                     })
                     .OrderByDescending(o => o.Priority)
                     .ToArray();
@@ -51,7 +52,7 @@ namespace Tasks.Api
                     Completed = null,
                     Due = null,
                     Name = newTask.Name,
-                    CategoryId = newTask.Category ?? 3
+                    CategoryId = newTask.Category ?? 3,
                 };
                 db.Tasks.Add(task);
 
@@ -122,7 +123,8 @@ namespace Tasks.Api
                     Created = o.Created,
                     Due = o.Due,
                     CategoryId = o.CategoryId,
-                    Comments = o.Comments
+                    Comments = o.Comments,
+                    Data = o.Data
                 })
                 .First(o => o.Id == id);
             }
@@ -162,9 +164,45 @@ namespace Tasks.Api
                 db.SaveChanges();
             }
         }
+
+        [HttpPost("tasks/{id}/data")]
+        public object AddData(int id, [FromBody]NewData newData)
+        {
+            using (var db = DbFactory.Create())
+            {
+                var task = db.Tasks.First(o => o.Id == id);
+                task.Updated = DateTime.Now;
+
+                var data = new Data { TaskId = id, Name = newData.Name, Value = newData.Value };
+                db.Data.Add(data);
+                db.SaveChanges();
+                return data;
+            }
+        }
+
+        [HttpPost("data/{dataId}/remove")]
+        public void RemoveData(int dataId)
+        {
+            using (var db = DbFactory.Create())
+            {
+                var data = db.Data.First(o => o.Id == dataId);
+                db.Data.Remove(data);
+
+                var task = db.Tasks.First(o => o.Id == data.TaskId);
+                task.Updated = DateTime.Now;
+
+                db.SaveChanges();
+            }
+        }
     }
 
     // http bodys
+
+    public class NewData
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+    }
 
     public class NewComment
     {

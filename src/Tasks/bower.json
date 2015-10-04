@@ -10,6 +10,7 @@
     "jquery-validation-unobtrusive": "3.2.2",
     "angularjs": "1.4.6",
     "angular-ui-grid": "3.0.6",
-    "momentjs": "*"
+    "momentjs": "*",
+    "angular-xeditable": "~0.1.9"
   }
 }

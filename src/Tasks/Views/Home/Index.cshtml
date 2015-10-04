@@ -5,20 +5,30 @@
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="~/lib/angular-ui-grid/ui-grid.min.css" />
+    
 
     <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
     <script src="~/lib/angularjs/angular.min.js"></script>
-    <script src="~/lib/angular-ui-grid/ui-grid.min.js"></script>
     <script src="~/lib/momentjs/moment.js"></script>
+
+    <script src="~/lib/angular-ui-grid/ui-grid.min.js"></script>
+    <link rel="stylesheet" href="~/lib/angular-ui-grid/ui-grid.min.css" />
+
+    <script src="~/lib/angular-xeditable/dist/js/xeditable.min.js"></script>
+    <link rel="stylesheet" href="~/lib/angular-xeditable/dist/css/xeditable.css" />
+
+    
 
     <style>
         body { height: 100%; overflow: auto }
         #left { height: 100%; width: 65%; box-sizing:border-box; float: left; margin-top:15px; margin-right:30px }
         #right { height: 100%; width: 30%; box-sizing:border-box; display:inline-block }
         .my-row { margin-top: 10px;}
+
+        .dataRow .showOnHover { visibility: hidden }
+        .dataRow:hover .showOnHover { visibility: visible }
     </style>
 </head>
 
@@ -48,7 +58,7 @@
                 <div ui-grid="gridOptions" ui-grid-selection></div>
             </div>
             <div id="right">
-                <form class="form-horizontal">
+                <form class="form-horizontal" name="selectedTaskForm">
                     <div class="form-group">
                         <label>Name</label>
                         <input type="text" class="form-control" ng-model="selectedTask.Name" ng-blur="updateField('Name')" />
@@ -89,16 +99,44 @@
                             </tr>
                         </table>
                     </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label>Data</label>
+                        </div>
+                        
+                        <div class="col-sm-6">
+                            <input ng-model="newDataName" type="text" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                            <input ng-model="newDataValue" type="text" class="form-control" ng-blur="addData()" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <table class="table table-striped">
+                            <tr ng-repeat="data in selectedTask.Data" class="dataRow" >
+                                <td>{{data.Name}}</td>
+                                <td>{{data.Value}}</td>
+                                <td>
+                                    <button class="showOnHover" style="border:none; background: transparent; float:right" ng-click="removeData(data.Id)">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </form>
+
             </div>
         </div>
 
     </div>
     <script>
 
-        var app = angular.module('TaskApp', ['ui.grid', 'ui.grid.selection']);
+        var app = angular.module('TaskApp', ['ui.grid', 'ui.grid.selection', 'xeditable']);
 
- 
+        app.run(function (editableOptions) {
+            editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
+        });
 
         app.controller('HomeCtrl', function ($scope, $http, $timeout) {
             $scope.gridOptions = {
@@ -123,6 +161,7 @@
                 }
             };
 
+
             $scope.formatDate = function (val) {
                 if (val == undefined) {
                     return "";
@@ -142,6 +181,12 @@
                 });
             };
 
+            $scope.removeData = function (dataId) {
+                $http.post('/api/data/' + dataId + '/remove').then(function () {
+                });
+                $scope.selectedTask.Data = $scope.selectedTask.Data.filter(function (o) { return o.Id != dataId; });
+            };
+
             $scope.addComment = function (e) {
                 if (e.which == 13) {
                     var data = { Message: $scope.newComment };
@@ -152,6 +197,18 @@
                     })
                 }
             };
+
+            $scope.addData = function () {
+                var data = {
+                    Name: $scope.newDataName,
+                    Value: $scope.newDataValue
+                };
+                $http.post('/api/tasks/' + $scope.selectedTask.Id + '/data', data).then(function (r) {
+                    $scope.selectedTask.Data.push(r.data);
+                    $scope.newDataName = '';
+                    $scope.newDataValue = '';
+                });
+            }
 
             $scope.newTask = function () {
                 var data = {
