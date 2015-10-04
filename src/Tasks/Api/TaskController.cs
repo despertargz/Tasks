@@ -103,6 +103,7 @@ namespace Tasks.Api
                     task.CategoryId = int.Parse(body.Value);
                 }
 
+                task.Updated = DateTime.Now;
                 db.SaveChanges();
             }
         }
@@ -154,6 +155,9 @@ namespace Tasks.Api
         {
             using (var db = DbFactory.Create())
             {
+                var task = db.Tasks.First(o => o.Id == id);
+                task.Updated = DateTime.Now;
+
                 db.Comments.Add(new Comment() { Message = newComment.Message, Time = DateTime.Now, TaskId = id });
                 db.SaveChanges();
             }
