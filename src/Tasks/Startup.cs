@@ -11,7 +11,7 @@ using Microsoft.Framework.Configuration;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Logging.Console;
-using Microsoft.Framework.Runtime;
+using Microsoft.Dnx.Runtime;
 
 namespace Tasks
 {
@@ -20,7 +20,8 @@ namespace Tasks
         public Startup(IHostingEnvironment env, IApplicationEnvironment appEnv)
         {
             // Setup configuration sources.
-            var builder = new ConfigurationBuilder(appEnv.ApplicationBasePath)
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(appEnv.ApplicationBasePath)
                 .AddJsonFile("config.json")
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
@@ -42,6 +43,7 @@ namespace Tasks
         // Configure is called after ConfigureServices is called.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseIISPlatformHandler();
             loggerFactory.MinimumLevel = LogLevel.Information;
             loggerFactory.AddConsole();
 
@@ -51,13 +53,13 @@ namespace Tasks
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
-                app.UseErrorPage(ErrorPageOptions.ShowAll);
+                //app.UseErrorPage(ErrorPageOptions.ShowAll);
             }
             else
             {
                 // Add Error handling middleware which catches all application specific errors and
                 // send the request to the following path or controller action.
-                app.UseErrorHandler("/Home/Error");
+                //app.UseErrorHandler("/Home/Error");
             }
 
             // Add static files to the request pipeline.

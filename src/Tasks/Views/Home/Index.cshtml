@@ -105,10 +105,10 @@
                         </div>
                         
                         <div class="col-sm-6">
-                            <input ng-model="newDataName" type="text" class="form-control" />
+                            <input ng-model="newDataName" type="text" class="form-control" id="newDataName" />
                         </div>
                         <div class="col-sm-6">
-                            <input ng-model="newDataValue" type="text" class="form-control" ng-blur="addData()" />
+                            <input ng-model="newDataValue" type="text" class="form-control" ng-keypress="addData()" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -138,7 +138,21 @@
             editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
         });
 
-        app.controller('HomeCtrl', function ($scope, $http, $timeout) {
+        app.factory('focus', function($timeout, $window) {
+            return function(id) {
+                // timeout makes sure that it is invoked after any other event has been triggered.
+                // e.g. click events that need to run before the focus or
+                // inputs elements that are in a disabled state but are enabled when those events
+                // are triggered.
+                $timeout(function() {
+                    var element = $window.document.getElementById(id);
+                    if(element)
+                        element.focus();
+                });
+            };
+        });
+
+        app.controller('HomeCtrl', function ($scope, $http, $timeout, focus) {
             $scope.gridOptions = {
                 enableRowSelection: true,
                 enableRowHeaderSelection: false,
@@ -198,16 +212,19 @@
                 }
             };
 
-            $scope.addData = function () {
-                var data = {
-                    Name: $scope.newDataName,
-                    Value: $scope.newDataValue
-                };
-                $http.post('/api/tasks/' + $scope.selectedTask.Id + '/data', data).then(function (r) {
-                    $scope.selectedTask.Data.push(r.data);
-                    $scope.newDataName = '';
-                    $scope.newDataValue = '';
-                });
+            $scope.addData = function (e) {
+                if (e.which == 13) {
+                    var data = {
+                        Name: $scope.newDataName,
+                        Value: $scope.newDataValue
+                    };
+                    $http.post('/api/tasks/' + $scope.selectedTask.Id + '/data', data).then(function (r) {
+                        $scope.selectedTask.Data.push(r.data);
+                        $scope.newDataName = '';
+                        $scope.newDataValue = '';
+                        focus('newDataName');
+                    });
+                }
             }
 
             $scope.newTask = function () {

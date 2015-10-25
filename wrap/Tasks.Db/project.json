@@ -1,27 +1,7 @@
 {
   "version": "1.0.0-*",
   "frameworks": {
-    "net452": {
-      "wrappedProject": "../../Tasks.Db/Tasks.Db.csproj",
-      "bin": {
-        "assembly": "../../Tasks.Db/obj/{configuration}/Tasks.Db.dll",
-        "pdb": "../../Tasks.Db/obj/{configuration}/Tasks.Db.pdb"
-      },
-      "dependencies": {
-        "EntityFramework": "6.1.3"
-      }
-    },
-    "net451": {
-      "wrappedProject": "../../Tasks.Db/Tasks.Db.csproj",
-      "bin": {
-        "assembly": "../../Tasks.Db/obj/{configuration}/Tasks.Db.dll",
-        "pdb": "../../Tasks.Db/obj/{configuration}/Tasks.Db.pdb"
-      },
-      "dependencies": {
-        "EntityFramework": "6.1.3"
-      }
-    },
-    "net45": {
+    "dnx451": {
       "wrappedProject": "../../Tasks.Db/Tasks.Db.csproj",
       "bin": {
         "assembly": "../../Tasks.Db/obj/{configuration}/Tasks.Db.dll",

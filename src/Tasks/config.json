@@ -1,3 +1,12 @@
 {
-
+  "AppSettings": {
+    "Name": "Chris",
+    "Age": 26,
+    "constr": "data source=localhost\\sqlexpress; initial catalog=TaskDb; integrated security=true;"
+  },
+  "Data": {
+    "DefaultConnection": {
+      "ConnectionString": "data source=localhost\\sqlexpress; initial catalog=TaskDb; integrated security=true;"
+    }
+  }
 }
